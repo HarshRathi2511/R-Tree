@@ -307,6 +307,7 @@ void STR()
         MergeSort(i, min(n - 1, i + s * M - 1), 0);
     }
 }
+//function to print points loaded from file
 void displayRectangles()
 {
     for (int i = 0; i < n; i++)
