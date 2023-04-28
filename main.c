@@ -362,7 +362,6 @@ void STR(nodearray *node_arr, int b)
 // function to print points loaded from file
 void printRectangle(rectangle rect)
 {
-    printRandwa();
     point p = computeCentre(rect);
     printf("%.2f %.2f \n", p.x, p.y);
 }
@@ -449,9 +448,10 @@ Rnode *createTree(Queue *q)
     nodearray n3;
     node *a3 = malloc(Qsize * sizeof(node));
     n3.arr = a3;
-    n3.size = m;
+    n3.size = Qsize;
     for (int i = 0; i < Qsize; i++)
     {
+        // makes parent node from rnode
         node n = makenonLeafNode(dequeue(q));
         n3.arr[i] = n;
     }
