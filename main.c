@@ -14,12 +14,12 @@ node makenonLeafNode(Rnode *child);
 Rnode *makeLeafRNodes(int l);
 Rnode *makeRnode(bool isLeaf, bool isRoot);
 
-void Resolver(Rnode *addrs[], int i);  //incomplete 
+void Resolver(Rnode *addrs[], int i); // incomplete
 rectangle MinBoundRect(Rnode *rnode);
 
 #define M 4
 #define m 2
-// change the names of these variables
+// change the names of these variable
 point *A;
 int n = 0;
 struct rectangle
@@ -104,7 +104,7 @@ Rnode *makeLeafRNodes(int l)
     rnode->numChild = i - l;
 }
 /*
-    makes leaf nodes from the point array 
+    makes leaf nodes from the point array
 */
 node makeLeafNodes(int i)
 {
@@ -149,7 +149,6 @@ void fillNonLeafRnode(Queue *childRnodes, Rnode *parent)
     parent->numChild = i;
 }
 
-
 // MBR :- Testing left
 rectangle MinBoundRect(Rnode *rnode)
 {
@@ -184,7 +183,7 @@ void preorder(Rnode *root)
         preorder(root->childlist[i].childpointer);
     }
 }
-//functions for mking the r tree 
+// functions for mking the r tree
 
 // Rnode * createRtree(Queue * childRnodes)//initially pass queue of leafRnode Addresses
 // {
