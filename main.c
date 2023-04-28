@@ -8,20 +8,25 @@ typedef struct rectangle rectangle;
 typedef struct Rnode Rnode;
 typedef struct node node;
 typedef struct Queue Queue;
+typedef struct nodearray nodearray;
 
-node makeLeafNodes(int i);
+node makeLeafNodes(rectangle rect);
 node makenonLeafNode(Rnode *child);
 Rnode *makeLeafRNodes(int l);
 Rnode *makeRnode(bool isLeaf, bool isRoot);
+void displayNodeArray(nodearray node_arr);
 
 void Resolver(Rnode *addrs[], int i); // incomplete
 rectangle MinBoundRect(Rnode *rnode);
 
 #define M 4
 #define m 2
-// change the names of these variable
-point *A;
-int n = 0;
+
+struct nodearray{
+    node* arr;
+    int size;
+};
+
 struct rectangle
 {
     float low_x;
@@ -92,30 +97,25 @@ float min(float a, float b)
         return b;
     return a;
 }
-Rnode *makeLeafRNodes(int l)
-{
-    Rnode *rnode = makeRnode(true, false);
-    int i = 0;
-    for (i = l; i < min(l + M, n); i++)
-    {
-        node newnode = makeLeafNodes(i);
-        rnode->childlist[i] = newnode;
-    }
-    rnode->numChild = i - l;
-}
+// Rnode *makeLeafRNodes(int l)
+// {
+//     Rnode *rnode = makeRnode(true, false);
+//     int i = 0;
+//     for (i = l; i < min(l + M, n); i++)
+//     {
+//         node newnode = makeLeaRNodes(i);
+//         rnode->childlist[i] = newnode;
+//     }
+//     rnode->numChild = i - l;
+// }
 /*
     makes leaf nodes from the point array
 */
-node makeLeafNodes(int i)
+node makeLeafNodes(rectangle rect)
 {
     node newnode;
     newnode.childpointer = NULL;
-    rectangle r;
-    r.low_x = A[i].x;
-    r.high_x = A[i].x;
-    r.low_y = A[i].y;
-    r.high_y = A[i].y;
-    newnode.mbr = r;
+    newnode.mbr = rect;
     return newnode;
 }
 Rnode *makeRnode(bool isLeaf, bool isRoot)
@@ -229,21 +229,39 @@ void preorder(Rnode *root)
 
 // STR CODE :-
 
-int LoadRectangles()
+//correct 
+nodearray  LoadRectangles()
 {
+
+
     FILE *fp = fopen("data.txt", "r");
     char buff[30];
-    while (fgets(buff, 30, fp) != NULL)
-        n++;
-    A = malloc(n * sizeof(point));
+    int n=0;
+    while (fgets(buff, 30, fp) != NULL){
+      n++;
+    }
+
+    //create nodearray 
+    nodearray nodearr;
+    node *arr = malloc(n*sizeof(node));  
+    nodearr.arr = arr;
+    nodearr.size = n;
+    //  
     int i = 0;
     rewind(fp);
     while (fgets(buff, 30, fp) != NULL)
-    {
-        sscanf(buff, "%f %f", &A[i].x, &A[i].y);
+    {   
+        float x=0,y=0;
+        sscanf(buff, "%f %f", &x, &y);
+        rectangle r;
+        r.low_x = r.high_x = x;
+        r.low_y = r.high_y = y;
+        arr[i] = makeLeafNodes(r);
         i++;
     }
-    return n;
+    fclose(fp);
+    
+    return nodearr;
 }
 
 void swap(point *x, point *y)
@@ -253,71 +271,102 @@ void swap(point *x, point *y)
     *y = temp;
 }
 
-void Merge(int l, int mid, int h, int x)
+point computeCentre(rectangle rect){
+    point p;
+    p.x = (rect.low_x+rect.high_x)/2.0;
+    p.y = (rect.low_y+rect.high_y)/2.0;
+    return p;
+}
+//pass the input node array in this function 
+void Merge(nodearray* node_arr,int l, int mid, int h, bool xflag)
 {
     int i = l, j = mid + 1, k = l;
-    point B[100];
+    //change this into a rectangle/node array 
+    int n = node_arr->size;
+    node B[n];//check
 
     while (i <= mid && j <= h)
-    {
-        if (x == 1)
+    {   
+        point centrei = computeCentre(node_arr->arr[i].mbr);
+        point centrej = computeCentre(node_arr->arr[j].mbr);
+
+        //sorted according to x coordinate 
+        if (xflag)
         {
-            if (A[i].x < A[j].x)
-                B[k++] = A[i++];
+            if (centrei.x < centrej.x)
+                B[k++] = node_arr->arr[i++];
             else
-                B[k++] = A[j++];
+                B[k++] = node_arr->arr[j++];
         }
-        else if (x == 0)
+        //sorted according to y coordinate 
+        else 
         {
-            if (A[i].y < A[j].y)
-                B[k++] = A[i++];
+            if (centrei.y < centrej.y)
+                B[k++] = node_arr->arr[i++];
             else
-                B[k++] = A[j++];
+                B[k++] = node_arr->arr[j++];
         }
     }
 
     for (; i <= mid; i++)
-        B[k++] = A[i];
+        B[k++] = node_arr->arr[i];
     for (; j <= h; j++)
-        B[k++] = A[j];
+        B[k++] = node_arr->arr[j];
 
     for (i = l; i <= h; i++)
-        A[i] = B[i];
+        node_arr->arr[i] = B[i];
 }
 
-void MergeSort(int l, int h, int x)
+//pass an input node array in it which is to be sorted 
+void MergeSort(nodearray* node_arr,int l, int h, bool xflag)
 {
-    int mid;
+    int mid = 0;
     if (l < h)
     {
         mid = (l + h) / 2;
-        MergeSort(l, mid, x);
-        MergeSort(mid + 1, h, x);
-        Merge(l, mid, h, x);
+        MergeSort(node_arr,l, mid, xflag);
+        MergeSort(node_arr,mid + 1, h, xflag);
+        Merge(node_arr,l, mid, h, xflag);
     }
 }
 
-void STR()
-{
-    MergeSort(0, n - 1, 1);
-    int p = ceil(n / M);
+//change this to the below signature :- 
+// node str(node* arr){
+void STR(nodearray* node_arr,int b)
+{   
+    MergeSort(node_arr,0, node_arr->size - 1, true); //should return an node array 
+    
+    int p = ceil((float)node_arr->size/(float) b);
     int s = ceil(sqrt(p));
-    for (int i = 0; i < n; i = i + s * M)
+    for (int i = 0; i < node_arr->size; i = i + s * b)
     {
-        MergeSort(i, min(n - 1, i + s * M - 1), 0);
+        MergeSort(node_arr,i, min(node_arr->size - 1, i + s * b - 1), false);
     }
+    displayNodeArray(*node_arr);
+
+}
+void printRandwa(){
+    for(int i =0;i<100;i++)printf("andi mandi sandi \nteri ma randi\n");
 }
 //function to print points loaded from file
-void displayRectangles()
+void printRectangle(rectangle rect){
+    printRandwa();
+    point p = computeCentre(rect);
+    printf("%.2f %.2f \n",p.x,p.y);
+}
+void displayNodeArray(nodearray node_arr)
 {
-    for (int i = 0; i < n; i++)
+    printf("size of node arr :- %d \n\n",node_arr.size);
+    for (int i = 0; i < node_arr.size; i++)
     {
-        printf("x:- %f  y:- %f \n", A[i].x, A[i].y);
+        printRectangle(node_arr.arr[i].mbr);
     }
 }
+
 void main()
-{
-    int n = LoadRectangles();
-    STR();
-    displayRectangles();
+{   
+    //inital loading from the file
+    nodearray node_arr = LoadRectangles();
+    displayNodeArray(node_arr);
+    STR(&node_arr,M);
 }
