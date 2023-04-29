@@ -60,66 +60,7 @@ struct point
     float y;
 };
 
-// Queue implementation in C
-// struct Queue
-// {
-//     int size;
-//     int front;
-//     int rear;
-//     Rnode **Q;
-// };
-
-// void create(struct Queue *q, int size)
-// {
-//     q= malloc(sizeof(Queue));
-//     q->size = size;
-//     q->front = q->rear = 0;
-//     q->Q = (Rnode**)malloc(q->size * sizeof(Rnode *));
-//     if (q->Q == NULL) {
-//        printf("handle the error, such as by exiting the program or returning an error code");
-//     }
-// }
-// void enqueue(struct Queue *q, Rnode *x)
-// {
-//     //debug
-//     if(q==NULL){
-//         printf("queue is null");
-//     }
-
-//     if ((q->rear + 1) % (q->size) == q->front)
-//         printf("Queue is Full");
-//     else
-//     {
-//         q->rear = (q->rear + 1) % (q->size);
-//         printf("before bt %d and size :- %d", q->rear,q->size);
-//         q->Q[q->rear] = x;
-//     }
-// }
-// Rnode *dequeue(struct Queue *q)
-// {
-//     Rnode *x = NULL;
-
-//     if (q->front == q->rear)
-//         return NULL;
-//     else
-//     {
-//         q->front = (q->front + 1) % (q->size);
-//         x = q->Q[q->front];
-//     }
-//     return x;
-// }
-// int qsize(struct Queue *q)
-// {
-//     if (q->rear >= q->front)
-//     {
-//         return q->rear - q->front;
-//     }
-//     else
-//     {
-//         return q->size - (q->front - q->rear);
-//     }
-// }
-// // HELPER FUNCTIONS :- @neel @samarth edit according to requirements
+// HELPER FUNCTIONS :- 
 
 float min(float a, float b)
 {
@@ -139,9 +80,9 @@ Rnode *createRNodes(nodearray node_arr, bool Leaf)
     rnode->numChild = node_arr.size;
     return rnode;
 }
-// /*
-//     makes leaf nodes from the point array
-// */
+/*
+    makes leaf nodes from the point array
+*/
 node makeLeafNodes(rectangle rect)
 {
     node newnode;
@@ -167,26 +108,14 @@ node makenonLeafNode(Rnode *child)
     return newnode;
 }
 
-void printRNodeAndElements(Rnode* rnode){
-  for(int i=0;i< rnode->numChild; i++){
-    printRectangle(rnode->childlist[i].mbr);
-  }
-  printf("....\n");
+void printRNodeAndElements(Rnode *rnode)
+{
+    for (int i = 0; i < rnode->numChild; i++)
+    {
+        printRectangle(rnode->childlist[i].mbr);
+    }
+    printf("....\n");
 }
-
-// void fillNonLeafRnode(Queue *childRnodes, Rnode *parent)
-// {
-//     int i = 0;
-//     for (i = 0; i < M; i++)
-//     {
-//         Rnode *child = dequeue(childRnodes); // if no child dequeue should give null;
-//         if (!child)
-//             break;
-//         node par = makenonLeafNode(child);
-//         parent->childlist[i] = par;
-//     }
-//     parent->numChild = i;
-// }
 
 // MBR :- Testing left
 rectangle MinBoundRect(Rnode *rnode)
@@ -202,26 +131,12 @@ rectangle MinBoundRect(Rnode *rnode)
             minbound.low_y = r.low_y;
         if (minbound.high_x < r.high_x)
             minbound.high_x = r.high_x;
-        if (minbound.high_x < r.high_x)
-            minbound.high_x = r.high_x;
+        if (minbound.high_y < r.high_y)
+            minbound.high_y = r.high_y;
     }
     return minbound;
 }
 
-// PREORDER TRAVERSAL
-void preorder(Rnode *root)
-{
-    if (root == NULL)
-    {
-        return;
-    }
-    for (int i = 0; i < root->numChild; i++)
-    {
-        // use a custom print function for the rectangle along with whether leaf or non leaf node
-        printf("%f ", root->childlist[i].mbr.high_x);
-        preorder(root->childlist[i].childpointer);
-    }
-}
 // STR CODE :-
 
 // correct
@@ -343,8 +258,8 @@ void STR(nodearray *node_arr, int b)
 // function to print points loaded from file
 void printRectangle(rectangle rect)
 {
-    point p = computeCentre(rect);
-    printf("%.2f %.2f \n", p.x, p.y);
+    // point p = computeCentre(rect);
+    printf("%.2f %.2f %.2f %.2f \n", rect.low_x, rect.high_x, rect.low_y, rect.high_y);
 }
 void displayNodeArray(nodearray node_arr)
 {
@@ -354,22 +269,22 @@ void displayNodeArray(nodearray node_arr)
     }
 }
 
-Rnodearray* createRNodesForLevel(nodearray a, bool Leaf)
-{   
-    //define the rnode_arr 
-    Rnodearray* rnode_arr = malloc(sizeof(Rnodearray));
+Rnodearray *createRNodesForLevel(nodearray a, bool Leaf)
+{
+    // define the rnode_arr
+    Rnodearray *rnode_arr = malloc(sizeof(Rnodearray));
     rnode_arr->size = a.size / M + 1;
-    rnode_arr->arr = malloc(sizeof(Rnode*) * rnode_arr->size);
+    rnode_arr->arr = malloc(sizeof(Rnode *) * rnode_arr->size);
 
     STR(&a, M);
-    int x=0;
+    int x = 0;
     for (int i = 0; i < a.size; i += M)
     {
-        //grouped node
+        // grouped node
         nodearray grouped_nodes;
         grouped_nodes.arr = malloc(M * sizeof(node));
 
-        grouped_nodes.size = min(M,a.size-i);
+        grouped_nodes.size = min(M, a.size - i);
 
         for (int j = 0; j < M && (i + j) < a.size; j++) // check condition
         {
@@ -379,23 +294,23 @@ Rnodearray* createRNodesForLevel(nodearray a, bool Leaf)
 
         Rnode *r1 = createRNodes(grouped_nodes, Leaf);
         rnode_arr->arr[x] = r1;
-        
-        //debug vals 
-        // printRNodeAndElements(rnode_arr->arr[i]);
-        
-        //dont change 
+
+        // debug vals
+        //  printRNodeAndElements(rnode_arr->arr[i]);
+
+        // dont change
         x++;
     }
     return rnode_arr;
 }
 
-Rnode *createTree(Rnodearray* rnode_arr)
+Rnode *createTree(Rnodearray *rnode_arr)
 {
     if (rnode_arr->size == 1)
     {
         return rnode_arr->arr[0];
     }
-    printf("rnode input size:- %d\n",rnode_arr->size);
+    printf("rnode input size:- %d\n", rnode_arr->size);
     nodearray created_parent_nodes;
     created_parent_nodes.arr = malloc(rnode_arr->size * sizeof(node));
     created_parent_nodes.size = rnode_arr->size;
@@ -407,10 +322,26 @@ Rnode *createTree(Rnodearray* rnode_arr)
         // printf("%f ", created_parent_nodes.arr[i].mbr.low_x);
         // printRectangle(created_parent_nodes.arr[i].mbr);
     }
-    Rnodearray* created_parent_rnodes = createRNodesForLevel(created_parent_nodes, false);
-    printf("rnode op size:- %d\n\n\n",created_parent_rnodes->size);
+    Rnodearray *created_parent_rnodes = createRNodesForLevel(created_parent_nodes, false);
+    printf("rnode op size:- %d\n\n\n", created_parent_rnodes->size);
 
     createTree(created_parent_rnodes);
+}
+
+// PREORDER TRAVERSAL
+static int count =0;
+void preorder(Rnode *root)
+{
+    if (root == NULL)
+    {
+        return;
+    }
+    for (int i = 0; i < root->numChild; i++)
+    {
+        // use a custom print function for the rectangle along with whether leaf or non leaf node
+        printRectangle(root->childlist[i].mbr);
+        preorder(root->childlist[i].childpointer);
+    }
 }
 
 void main()
@@ -419,7 +350,7 @@ void main()
     nodearray node_arr = LoadRectangles();
     // displayNodeArray(node_arr);
 
-    Rnodearray* rnode_arr = createRNodesForLevel(node_arr, true);
+    Rnodearray *rnode_arr = createRNodesForLevel(node_arr, true);
 
     // for(int i=0;i<rnode_arr->size;i++){
     //     printRNodeAndElements(rnode_arr->arr[i]);
@@ -427,9 +358,10 @@ void main()
 
     // printf("%d",rnode_arr->size);
 
-    Rnode *root= createTree(rnode_arr);
-    if(root){
+    Rnode *root = createTree(rnode_arr);
+    if (root)
+    {
         printRNodeAndElements(root);
     }
-    // preorder(root);
+    preorder(root);
 }
