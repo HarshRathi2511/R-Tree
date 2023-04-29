@@ -120,6 +120,7 @@ Rnode *createRNodes(nodearray narr, bool Leaf)
         rnode->childlist[i] = newnode;
     }
     rnode->numChild = narr.size;
+ return rnode;
 }
 // /*
 //     makes leaf nodes from the point array
