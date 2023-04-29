@@ -1,5 +1,9 @@
 import csv
 from matplotlib import pyplot as plt, patches
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+import matplotlib.colors as mcolors
+import random
 
 # For csv
 # row[0] -> anchor_x (bottom left corner)
