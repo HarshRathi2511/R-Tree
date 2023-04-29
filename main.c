@@ -7,8 +7,8 @@ typedef struct point point;
 typedef struct rectangle rectangle;
 typedef struct Rnode Rnode;
 typedef struct node node;
-typedef struct Queue Queue;
 typedef struct nodearray nodearray;
+typedef struct Rnodearray Rnodearray;
 
 node makeLeafNodes(rectangle rect);
 node makenonLeafNode(Rnode *child);
@@ -25,6 +25,12 @@ rectangle MinBoundRect(Rnode *rnode);
 struct nodearray
 {
     node *arr;
+    int size;
+};
+
+struct Rnodearray
+{
+    Rnode **arr; // array of Rnode*
     int size;
 };
 
@@ -54,55 +60,65 @@ struct point
 };
 
 // Queue implementation in C
-struct Queue
-{
-    int size;
-    int front;
-    int rear;
-    Rnode **Q;
-};
+// struct Queue
+// {
+//     int size;
+//     int front;
+//     int rear;
+//     Rnode **Q;
+// };
 
-void create(struct Queue *q, int size)
-{
-    q->size = size;
-    q->front = q->rear = -1;
-    q->Q = malloc(q->size * sizeof(Rnode *));
-}
-void enqueue(struct Queue *q, Rnode *x)
-{
-    if ((q->rear + 1) % (q->size) == q->front)
-        printf("Queue is Full");
-    else
-    {
-        q->rear = (q->rear + 1) % (q->size);
-        q->Q[q->rear] = x;
-    }
-}
-Rnode *dequeue(struct Queue *q)
-{
-    Rnode *x = NULL;
+// void create(struct Queue *q, int size)
+// {
+//     q= malloc(sizeof(Queue));
+//     q->size = size;
+//     q->front = q->rear = 0;
+//     q->Q = (Rnode**)malloc(q->size * sizeof(Rnode *));
+//     if (q->Q == NULL) {
+//        printf("handle the error, such as by exiting the program or returning an error code");
+//     }
+// }
+// void enqueue(struct Queue *q, Rnode *x)
+// {
+//     //debug
+//     if(q==NULL){
+//         printf("queue is null");
+//     }
 
-    if (q->front == q->rear)
-        return NULL;
-    else
-    {
-        q->front = (q->front + 1) % (q->size);
-        x = q->Q[q->front];
-    }
-    return x;
-}
-int qsize(struct Queue *q)
-{
-    if (q->rear >= q->front)
-    {
-        return q->rear - q->front ;
-    }
-    else
-    {
-        return q->size - (q->front - q->rear );
-    }
-}
-// HELPER FUNCTIONS :- @neel @samarth edit according to requirements
+//     if ((q->rear + 1) % (q->size) == q->front)
+//         printf("Queue is Full");
+//     else
+//     {
+//         q->rear = (q->rear + 1) % (q->size);
+//         printf("before bt %d and size :- %d", q->rear,q->size);
+//         q->Q[q->rear] = x;
+//     }
+// }
+// Rnode *dequeue(struct Queue *q)
+// {
+//     Rnode *x = NULL;
+
+//     if (q->front == q->rear)
+//         return NULL;
+//     else
+//     {
+//         q->front = (q->front + 1) % (q->size);
+//         x = q->Q[q->front];
+//     }
+//     return x;
+// }
+// int qsize(struct Queue *q)
+// {
+//     if (q->rear >= q->front)
+//     {
+//         return q->rear - q->front;
+//     }
+//     else
+//     {
+//         return q->size - (q->front - q->rear);
+//     }
+// }
+// // HELPER FUNCTIONS :- @neel @samarth edit according to requirements
 
 float min(float a, float b)
 {
@@ -110,17 +126,17 @@ float min(float a, float b)
         return b;
     return a;
 }
-Rnode *createRNodes(nodearray narr, bool Leaf)
+Rnode *createRNodes(nodearray node_arr, bool Leaf)
 {
     Rnode *rnode = makeRnode(Leaf, false);
     int i = 0;
-    for (i = 0; i < narr.size; i++)
+    for (i = 0; i < node_arr.size; i++)
     {
-        node newnode = narr.arr[i];
+        node newnode = node_arr.arr[i];
         rnode->childlist[i] = newnode;
     }
-    rnode->numChild = narr.size;
- return rnode;
+    rnode->numChild = node_arr.size;
+    return rnode;
 }
 // /*
 //     makes leaf nodes from the point array
@@ -373,62 +389,76 @@ void displayNodeArray(nodearray node_arr)
     }
 }
 
-Queue *createRNodesForLevel(nodearray a, bool Leaf)
+Rnodearray createRNodesForLevel(nodearray a, bool Leaf)
 {
-    Queue *q1;
-    create(q1, a.size);
-    int i;
+    Rnodearray rnode_arr;
+    rnode_arr.size = a.size / M + 1;
+    rnode_arr.arr = malloc(sizeof(Rnode *) * rnode_arr.size);
+
     STR(&a, M);
-    for (i = 0; i < a.size; i += M)
+    for (int i = 0; i < a.size; i += M)
     {
+        //grouped node
+        nodearray grouped_nodes;
+        grouped_nodes.arr = malloc(M * sizeof(node));
+
+        grouped_nodes.size = min(M,a.size-i);
+
+        for (int j = 0; j < M && (i + j) < a.size; j++) // check condition
         {
-            nodearray nodearr;
-            nodearr.arr = malloc(M * sizeof(node));
-            nodearr.size = M;
-            for (int j = 0; j < M && (i+j)<a.size; j++)//check condition
-            {
-                nodearr.arr[j] = a.arr[i + j];
-            }
-
-            Rnode *r1 = createRNodes(nodearr, Leaf);
-            enqueue(q1, r1);
+            grouped_nodes.arr[j] = a.arr[i + j];
+            printf("%f\n",grouped_nodes.arr[j].mbr.low_x);
         }
+
+        Rnode *r1 = createRNodes(grouped_nodes, Leaf);
+        rnode_arr.arr[i] = r1;
+
+        printf("num %d\n", rnode_arr.arr[i]->numChild);
+
     }
-    return q1;
+    return rnode_arr;
 }
 
-Rnode *createTree(Queue *q)
-{
-    // Qsize one more than actual
-    int Qsize = qsize(q);
-    printf("%d ", Qsize);
-    if (Qsize == 1)
-    {
-        return dequeue(q);
-    }
-    nodearray nodearr;
-    nodearr.arr = malloc(Qsize * sizeof(node));
-    nodearr.size = Qsize;
-    for (int i = 0; i < Qsize; i++)
-    {
-        // makes parent node from rnode
-        node n = makenonLeafNode(dequeue(q));
-        nodearr.arr[i] = n;
-        printf("%f ",nodearr.arr[i].mbr.low_x);
-    }
-    Queue *queue = createRNodesForLevel(nodearr, false);
-    
-    createTree(queue);
-}
+// Rnode *createTree(Queue *q)
+// {
+//     // Qsize one more than actual
+//     int Qsize = qsize(q);
+//     printf("%d ", Qsize);
+//     if (Qsize == 1)
+//     {
+//         return dequeue(q);
+//     }
+//     nodearray nodearr;
+//     nodearr.arr = malloc(Qsize * sizeof(node));
+//     nodearr.size = Qsize;
+//     for (int i = 0; i < Qsize; i++)
+//     {
+//         // makes parent node from rnode
+//         node n = makenonLeafNode(dequeue(q));
+//         nodearr.arr[i] = n;
+//         printf("%f ", nodearr.arr[i].mbr.low_x);
+//     }
+//     Queue *queue = createRNodesForLevel(nodearr, false);
+
+//     createTree(queue);
+// }
 
 void main()
 {
     // inital loading from the file
     nodearray node_arr = LoadRectangles();
     // displayNodeArray(node_arr);
-    // STR(&node_arr, M);
-    Rnode *root;
-    root = createTree(createRNodesForLevel(node_arr, true));
-    preorder(root);
-    
+
+    Rnodearray rnode_arr = createRNodesForLevel(node_arr, true);
+
+    // printf("%d\n", rnode_arr.size);
+    // for (int i = 0; i < 6; i++)
+    // {
+    //     printf("%d\n", rnode_arr.arr[i]->numChild);
+    //     // printf("%f\n",rnode_arr.arr[i]->childlist[0].mbr.low_x);
+    // }
+
+    // Rnode *root;
+    // root = createTree(createRNodesForLevel(node_arr, true));
+    // preorder(root);
 }
