@@ -124,13 +124,13 @@ Rnode *createRNodes(nodearray narr, bool Leaf)
 // /*
 //     makes leaf nodes from the point array
 // */
-// node makeLeafNodes(rectangle rect)
-// {
-//     node newnode;
-//     newnode.childpointer = NULL;
-//     newnode.mbr = rect;
-//     return newnode;
-// }
+node makeLeafNodes(rectangle rect)
+{
+    node newnode;
+    newnode.childpointer = NULL;
+    newnode.mbr = rect;
+    return newnode;
+}
 Rnode *makeRnode(bool isLeaf, bool isRoot)
 {
     Rnode *rnode = (malloc)(sizeof(Rnode));
@@ -356,7 +356,6 @@ void STR(nodearray *node_arr, int b)
     {
         MergeSort(node_arr, i, min(node_arr->size - 1, i + s * b - 1), false);
     }
-    displayNodeArray(*node_arr);
 }
 
 // function to print points loaded from file
@@ -367,7 +366,6 @@ void printRectangle(rectangle rect)
 }
 void displayNodeArray(nodearray node_arr)
 {
-    printf("size of node arr :- %d \n\n", node_arr.size);
     for (int i = 0; i < node_arr.size; i++)
     {
         printRectangle(node_arr.arr[i].mbr);
@@ -379,83 +377,47 @@ Queue *createRNodesForLevel(nodearray a, bool Leaf)
     Queue *q1;
     create(q1, a.size);
     int i;
-
-    for (i = 0; i < (a.size - 2 * M); i += M)
+    STR(&a,M);
+    for (i = 0; i < a.size; i += M)
     {
         {
-            nodearray n1;
-            node *a1 = malloc(M * sizeof(node));
-            n1.arr = a1;
-            n1.size = M;
+            nodearray nodearr;
+            nodearr.arr = malloc(M * sizeof(node));
+            nodearr.size = M;
             for (int j = 0; j < M; j++)
             {
-                n1.arr[j] = a.arr[i + j];
+                nodearr.arr[j] = a.arr[i + j];
             }
 
-            Rnode *r1 = createRNodes(n1, Leaf);
+            Rnode *r1 = createRNodes(nodearr, Leaf);
             enqueue(q1, r1);
-            free(a1);
+            
+        
         }
     }
-    // making a new nodearray for remaining less than 2*M nodes
-    nodearray n2;
-    node *a2 = malloc(a.size - i * sizeof(node));
-    n2.arr = a2;
-    n2.size = a.size - i;
-    for (int j = 0; j < n2.size; j++)
-    {
-        n2.arr[j] = a.arr[i + j];
-    }
-    // sending remaining < 2*M nodes to STR
-    int secondlastsize = M - (m - (a.size - i - M));
-    STR(&n2, secondlastsize);
-
-    // creating RNodes for 2nd last group of nodes
-    nodearray n1;
-    node *a1 = malloc(secondlastsize * sizeof(node));
-    n1.arr = a1;
-    n1.size = secondlastsize;
-    int j;
-    for (j = 0; j < secondlastsize; j++)
-    {
-        n1.arr[j] = n2.arr[j];
-    }
-    Rnode *r1 = createRNodes(n1, Leaf);
-    enqueue(q1, r1);
-    free(a1);
-    // creating Rnode for last m nodes
-    nodearray n4;
-    node *a1 = malloc(m * sizeof(node));
-    n4.arr = a1;
-    n4.size = m;
-    for (int k = 0; k < m; k++)
-    {
-        n4.arr[k] = n2.arr[j + k];
-    }
-    Rnode *r1 = createRNodes(n4, Leaf);
-    enqueue(q1, r1);
-    free(a1);
-    return q1;
+   return q1;
 }
 
 Rnode *createTree(Queue *q)
 {
+    //Qsize one more than actual
     int Qsize = qsize(q);
+    printf("%d",Qsize);
     if (Qsize == 1)
     {
         return dequeue(q);
     }
-    nodearray n3;
-    node *a3 = malloc(Qsize * sizeof(node));
-    n3.arr = a3;
-    n3.size = Qsize;
+    nodearray nodearr;
+    nodearr.arr= malloc(Qsize * sizeof(node));
+    nodearr.size = Qsize;
     for (int i = 0; i < Qsize; i++)
     {
         // makes parent node from rnode
         node n = makenonLeafNode(dequeue(q));
-        n3.arr[i] = n;
+        nodearr.arr[i] = n;
     }
-    Queue *queue = createRNodesForLevel(n3, false);
+    Queue *queue = createRNodesForLevel(nodearr, false);
+    printf("here");
     createTree(queue);
 }
 
@@ -463,8 +425,8 @@ void main()
 {
     // inital loading from the file
     nodearray node_arr = LoadRectangles();
-    displayNodeArray(node_arr);
-    STR(&node_arr, M);
+    // displayNodeArray(node_arr);
+    // STR(&node_arr, M);
     Rnode *root;
     root = createTree(createRNodesForLevel(node_arr, true));
     preorder(root);
