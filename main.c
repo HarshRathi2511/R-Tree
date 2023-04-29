@@ -389,29 +389,29 @@ Rnodearray* createRNodesForLevel(nodearray a, bool Leaf)
     return rnode_arr;
 }
 
-// Rnode *createTree(Queue *q)
-// {
-//     // Qsize one more than actual
-//     int Qsize = qsize(q);
-//     printf("%d ", Qsize);
-//     if (Qsize == 1)
-//     {
-//         return dequeue(q);
-//     }
-//     nodearray nodearr;
-//     nodearr.arr = malloc(Qsize * sizeof(node));
-//     nodearr.size = Qsize;
-//     for (int i = 0; i < Qsize; i++)
-//     {
-//         // makes parent node from rnode
-//         node n = makenonLeafNode(dequeue(q));
-//         nodearr.arr[i] = n;
-//         printf("%f ", nodearr.arr[i].mbr.low_x);
-//     }
-//     Queue *queue = createRNodesForLevel(nodearr, false);
+Rnode *createTree(Rnodearray* rnode_arr)
+{
+    if (rnode_arr->size == 1)
+    {
+        return rnode_arr->arr[0];
+    }
+    printf("rnode input size:- %d\n",rnode_arr->size);
+    nodearray created_parent_nodes;
+    created_parent_nodes.arr = malloc(rnode_arr->size * sizeof(node));
+    created_parent_nodes.size = rnode_arr->size;
 
-//     createTree(queue);
-// }
+    for (int i = 0; i < rnode_arr->size; i++)
+    {
+        // makes parent node from rnode
+        created_parent_nodes.arr[i] = makenonLeafNode(rnode_arr->arr[i]);
+        // printf("%f ", created_parent_nodes.arr[i].mbr.low_x);
+        // printRectangle(created_parent_nodes.arr[i].mbr);
+    }
+    Rnodearray* created_parent_rnodes = createRNodesForLevel(created_parent_nodes, false);
+    printf("rnode op size:- %d\n\n\n",created_parent_rnodes->size);
+
+    createTree(created_parent_rnodes);
+}
 
 void main()
 {
@@ -421,13 +421,15 @@ void main()
 
     Rnodearray* rnode_arr = createRNodesForLevel(node_arr, true);
 
-    for(int i=0;i<rnode_arr->size;i++){
-        printRNodeAndElements(rnode_arr->arr[i]);
+    // for(int i=0;i<rnode_arr->size;i++){
+    //     printRNodeAndElements(rnode_arr->arr[i]);
+    // }
+
+    // printf("%d",rnode_arr->size);
+
+    Rnode *root= createTree(rnode_arr);
+    if(root){
+        printRNodeAndElements(root);
     }
-
-    printf("%d",rnode_arr->size);
-
-    // Rnode *root;
-    // root = createTree(createRNodesForLevel(node_arr, true));
     // preorder(root);
 }
