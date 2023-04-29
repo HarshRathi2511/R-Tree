@@ -15,6 +15,7 @@ node makenonLeafNode(Rnode *child);
 Rnode *createRNodes(nodearray narr, bool Leaf);
 Rnode *makeRnode(bool isLeaf, bool isRoot);
 void displayNodeArray(nodearray node_arr);
+void printRectangle(rectangle rect);
 
 // void Resolver(Rnode *addrs[], int i); // incomplete
 rectangle MinBoundRect(Rnode *rnode);
@@ -165,6 +166,14 @@ node makenonLeafNode(Rnode *child)
     newnode.mbr = MinBoundRect(child);
     return newnode;
 }
+
+void printRNodeAndElements(Rnode* rnode){
+  for(int i=0;i< rnode->numChild; i++){
+    printRectangle(rnode->childlist[i].mbr);
+  }
+  printf("....\n");
+}
+
 // void fillNonLeafRnode(Queue *childRnodes, Rnode *parent)
 // {
 //     int i = 0;
@@ -213,50 +222,6 @@ void preorder(Rnode *root)
         preorder(root->childlist[i].childpointer);
     }
 }
-// functions for mking the r tree
-
-// Rnode * createRtree(Queue * childRnodes)//initially pass queue of leafRnode Addresses
-// {
-//     Rnode * addrs[n];
-//     int i = 0;
-//     do{
-//         Rnode * parent = malloc(sizeof(Rnode));
-//         fillNonLeafRnode(childRnodes,parent);
-//         if(parent ==NULL);break;
-//         addrs[i++] = parent;
-//     }while(true);
-//         if(i==1) {
-//         addrs[0]->isRoot = true;
-//         return addrs[0];
-//         }
-//         if(addrs[i-1]->numChild < m)
-//         Resolver(addrs,i);
-//         for(int j=0;j<i;j++){
-//            enqueue(childRnodes,addrs[i]);
-//         }
-//         return createRtree(childRnodes);
-// }
-
-// Queue * LeafRNodeAddresses(){
-//     Queue * q;
-//     q = malloc(sizeof(Queue));
-//     Rnode * addrs[n];
-//     int i=0,x=0;
-//     for(i=0;i<n;i+=M){
-//          addrs[x++] = makeLeafRNodes(i);
-//     }
-//  if(i>n)
-//  addrs[x++] = makeLeafRNodes(i-M);
-//  Resolver(addrs,x);
-//  for(int j =0;j<x;j++){
-//     enqueue(q,addrs[j]);
-//  }
-//  return q;
-
-// }
-
-// void Resolver(Rnode *addrs[],int i) implement it resolve the leaf nodes
-
 // STR CODE :-
 
 // correct
@@ -389,13 +354,15 @@ void displayNodeArray(nodearray node_arr)
     }
 }
 
-Rnodearray createRNodesForLevel(nodearray a, bool Leaf)
-{
-    Rnodearray rnode_arr;
-    rnode_arr.size = a.size / M + 1;
-    rnode_arr.arr = malloc(sizeof(Rnode *) * rnode_arr.size);
+Rnodearray* createRNodesForLevel(nodearray a, bool Leaf)
+{   
+    //define the rnode_arr 
+    Rnodearray* rnode_arr = malloc(sizeof(Rnodearray));
+    rnode_arr->size = a.size / M + 1;
+    rnode_arr->arr = malloc(sizeof(Rnode*) * rnode_arr->size);
 
     STR(&a, M);
+    int x=0;
     for (int i = 0; i < a.size; i += M)
     {
         //grouped node
@@ -407,14 +374,17 @@ Rnodearray createRNodesForLevel(nodearray a, bool Leaf)
         for (int j = 0; j < M && (i + j) < a.size; j++) // check condition
         {
             grouped_nodes.arr[j] = a.arr[i + j];
-            printf("%f\n",grouped_nodes.arr[j].mbr.low_x);
+            // printf("%f\n",grouped_nodes.arr[j].mbr.low_x);
         }
 
         Rnode *r1 = createRNodes(grouped_nodes, Leaf);
-        rnode_arr.arr[i] = r1;
-
-        printf("num %d\n", rnode_arr.arr[i]->numChild);
-
+        rnode_arr->arr[x] = r1;
+        
+        //debug vals 
+        // printRNodeAndElements(rnode_arr->arr[i]);
+        
+        //dont change 
+        x++;
     }
     return rnode_arr;
 }
@@ -449,14 +419,13 @@ void main()
     nodearray node_arr = LoadRectangles();
     // displayNodeArray(node_arr);
 
-    Rnodearray rnode_arr = createRNodesForLevel(node_arr, true);
+    Rnodearray* rnode_arr = createRNodesForLevel(node_arr, true);
 
-    // printf("%d\n", rnode_arr.size);
-    // for (int i = 0; i < 6; i++)
-    // {
-    //     printf("%d\n", rnode_arr.arr[i]->numChild);
-    //     // printf("%f\n",rnode_arr.arr[i]->childlist[0].mbr.low_x);
-    // }
+    for(int i=0;i<rnode_arr->size;i++){
+        printRNodeAndElements(rnode_arr->arr[i]);
+    }
+
+    printf("%d",rnode_arr->size);
 
     // Rnode *root;
     // root = createTree(createRNodesForLevel(node_arr, true));
