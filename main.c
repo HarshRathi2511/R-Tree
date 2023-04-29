@@ -95,11 +95,11 @@ int qsize(struct Queue *q)
 {
     if (q->rear >= q->front)
     {
-        return q->rear - q->front + 1;
+        return q->rear - q->front ;
     }
     else
     {
-        return q->size - (q->front - q->rear - 1);
+        return q->size - (q->front - q->rear );
     }
 }
 // HELPER FUNCTIONS :- @neel @samarth edit according to requirements
@@ -384,7 +384,7 @@ Queue *createRNodesForLevel(nodearray a, bool Leaf)
             nodearray nodearr;
             nodearr.arr = malloc(M * sizeof(node));
             nodearr.size = M;
-            for (int j = 0; j < M; j++)
+            for (int j = 0; j < M && (i+j)<a.size; j++)//check condition
             {
                 nodearr.arr[j] = a.arr[i + j];
             }
@@ -400,7 +400,7 @@ Rnode *createTree(Queue *q)
 {
     // Qsize one more than actual
     int Qsize = qsize(q);
-    printf("%d", Qsize);
+    printf("%d ", Qsize);
     if (Qsize == 1)
     {
         return dequeue(q);
@@ -413,9 +413,10 @@ Rnode *createTree(Queue *q)
         // makes parent node from rnode
         node n = makenonLeafNode(dequeue(q));
         nodearr.arr[i] = n;
+        printf("%f ",nodearr.arr[i].mbr.low_x);
     }
     Queue *queue = createRNodesForLevel(nodearr, false);
-    printf("here");
+    
     createTree(queue);
 }
 
@@ -428,4 +429,5 @@ void main()
     Rnode *root;
     root = createTree(createRNodesForLevel(node_arr, true));
     preorder(root);
+    
 }
