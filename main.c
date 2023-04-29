@@ -124,13 +124,13 @@ Rnode *createRNodes(nodearray narr, bool Leaf)
 // /*
 //     makes leaf nodes from the point array
 // */
-// node makeLeafNodes(rectangle rect)
-// {
-//     node newnode;
-//     newnode.childpointer = NULL;
-//     newnode.mbr = rect;
-//     return newnode;
-// }
+node makeLeafNodes(rectangle rect)
+{
+    node newnode;
+    newnode.childpointer = NULL;
+    newnode.mbr = rect;
+    return newnode;
+}
 Rnode *makeRnode(bool isLeaf, bool isRoot)
 {
     Rnode *rnode = (malloc)(sizeof(Rnode));
@@ -420,21 +420,21 @@ Queue *createRNodesForLevel(nodearray a, bool Leaf)
     {
         n1.arr[j] = n2.arr[j];
     }
-    Rnode *r1 = createRNodes(n1, Leaf);
-    enqueue(q1, r1);
+    Rnode *temp_r1 = createRNodes(n1, Leaf);
+    enqueue(q1, temp_r1);
     free(a1);
     // creating Rnode for last m nodes
     nodearray n4;
-    node *a1 = malloc(m * sizeof(node));
-    n4.arr = a1;
+    node *temp2 = malloc(m * sizeof(node));
+    n4.arr = temp2;
     n4.size = m;
     for (int k = 0; k < m; k++)
     {
         n4.arr[k] = n2.arr[j + k];
     }
-    Rnode *r1 = createRNodes(n4, Leaf);
-    enqueue(q1, r1);
-    free(a1);
+    Rnode *temp_r2 = createRNodes(n4, Leaf);
+    enqueue(q1, temp_r2);
+    free(temp2);
     return q1;
 }
 
@@ -465,7 +465,6 @@ void main()
     nodearray node_arr = LoadRectangles();
     displayNodeArray(node_arr);
     STR(&node_arr, M);
-    Rnode *root;
-    root = createTree(createRNodesForLevel(node_arr, true));
-    preorder(root);
+    Rnode *root = createTree(createRNodesForLevel(node_arr, true));
+    // preorder(root);
 }
