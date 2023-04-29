@@ -377,7 +377,7 @@ Queue *createRNodesForLevel(nodearray a, bool Leaf)
     Queue *q1;
     create(q1, a.size);
     int i;
-    STR(&a,M);
+    STR(&a, M);
     for (i = 0; i < a.size; i += M)
     {
         {
@@ -391,24 +391,22 @@ Queue *createRNodesForLevel(nodearray a, bool Leaf)
 
             Rnode *r1 = createRNodes(nodearr, Leaf);
             enqueue(q1, r1);
-            
-        
         }
     }
-   return q1;
+    return q1;
 }
 
 Rnode *createTree(Queue *q)
 {
-    //Qsize one more than actual
+    // Qsize one more than actual
     int Qsize = qsize(q);
-    printf("%d",Qsize);
+    printf("%d", Qsize);
     if (Qsize == 1)
     {
         return dequeue(q);
     }
     nodearray nodearr;
-    nodearr.arr= malloc(Qsize * sizeof(node));
+    nodearr.arr = malloc(Qsize * sizeof(node));
     nodearr.size = Qsize;
     for (int i = 0; i < Qsize; i++)
     {
