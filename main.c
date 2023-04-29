@@ -60,7 +60,7 @@ struct point
     float y;
 };
 
-// HELPER FUNCTIONS :- 
+// HELPER FUNCTIONS :-
 
 float min(float a, float b)
 {
@@ -328,8 +328,20 @@ Rnode *createTree(Rnodearray *rnode_arr)
     createTree(created_parent_rnodes);
 }
 
+void printRecToCSV(rectangle mbr)
+{
+    FILE *fp = fopen("rect_data.csv", "a");
+    if (fp == NULL)
+    {
+        printf("File pointer not found\n");
+    }
+    //write abs()
+    fprintf(fp, "%d,%d,%d,%d\n", (int)mbr.low_x, (int)mbr.low_y, (int)mbr.high_x - (int)mbr.low_x, (int)mbr.high_y - (int)mbr.low_y);
+    fclose(fp);
+}
+
 // PREORDER TRAVERSAL
-static int count =0;
+static int count = 0;
 void preorder(Rnode *root)
 {
     if (root == NULL)
@@ -340,6 +352,7 @@ void preorder(Rnode *root)
     {
         // use a custom print function for the rectangle along with whether leaf or non leaf node
         printRectangle(root->childlist[i].mbr);
+        printRecToCSV(root->childlist[i].mbr);
         preorder(root->childlist[i].childpointer);
     }
 }
