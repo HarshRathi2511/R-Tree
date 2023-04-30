@@ -16,12 +16,10 @@ Rnode *createRNodes(nodearray narr, bool Leaf);
 Rnode *makeRnode(bool isLeaf, bool isRoot);
 void displayNodeArray(nodearray node_arr);
 void printRectangle(rectangle rect);
-
-// void Resolver(Rnode *addrs[], int i); // incomplete
+void displaySingleNode(node* node);
 rectangle MinBoundRect(Rnode *rnode);
 
-#define M 25
-// #define m 2
+#define M 50
 
 struct nodearray
 {
@@ -151,7 +149,7 @@ rectangle MinBoundRect(Rnode *rnode)
 nodearray LoadRectangles()
 {
 
-    FILE *fp = fopen("data.txt", "r");
+    FILE *fp = fopen("data1000.txt", "r");
     char buff[30];
     int n = 0;
     while (fgets(buff, 30, fp) != NULL)
@@ -265,9 +263,22 @@ void STR(nodearray *node_arr, int b)
 
 // function to print points loaded from file
 void printRectangle(rectangle rect)
-{
-    // point p = computeCentre(rect);
-    printf("%.2f %.2f %.2f %.2f \n", rect.low_x, rect.high_x, rect.low_y, rect.high_y);
+{   
+    //when point rectangles 
+    if(rect.low_x== rect.high_x && rect.high_y==rect.low_y){
+          printf("(x,y):-(%.2f %.2f) \n", rect.low_x, rect.high_y);
+    }
+    printf("(low_x,low_y):-(%.2f %.2f),(high_x,high_y) (%.2f %.2f) \n", rect.low_x, rect.high_x, rect.low_y, rect.high_y);
+}
+
+void displaySingleNode(node* node){
+    if(node->childpointer== NULL){
+        //case of leaf nodes
+        // printf("Leaf :- ");
+    }else{
+        // printf("Internal :- ");
+    }
+    printRectangle(node->mbr);
 }
 void displayNodeArray(nodearray node_arr)
 {
@@ -278,10 +289,11 @@ void displayNodeArray(nodearray node_arr)
 }
 
 Rnodearray *createRNodesForLevel(nodearray a, bool Leaf)
-{
+{   
+    //!!11 handle the case when the number of rectangles are less than M 
     // define the rnode_arr
     Rnodearray *rnode_arr = malloc(sizeof(Rnodearray));
-    //!!11
+    
     rnode_arr->size = ceil((float)a.size / (float)M);
     rnode_arr->arr = malloc(sizeof(Rnode *) * rnode_arr->size);
 
@@ -363,8 +375,6 @@ void printRecToCSV(rectangle mbr)
     fclose(fp);
 }
 
-// PREORDER TRAVERSAL
-static int count = 0;
 void preorder(Rnode *root)
 {
     if (root == NULL)
@@ -374,14 +384,24 @@ void preorder(Rnode *root)
     for (int i = 0; i < root->numChild; i++)
     {
         // use a custom print function for the rectangle along with whether leaf or non leaf node
-        // printRectangle(root->childlist[i].mbr);
+        // displaySingleNode(&root->childlist[i]);
         printRecToCSV(root->childlist[i].mbr);
         preorder(root->childlist[i].childpointer);
     }
 }
 
+void clearRectCSV() {
+    FILE* fp = fopen("rect_data.csv", "w"); // open the file in "write" mode
+    if(fp==NULL)
+        return;
+    fclose(fp); // close the file to delete its contents
+}
+
 void main()
-{
+{   
+    
+    printf("Starting B-Tree Execution\n");
+    clearRectCSV();
     // inital loading from the file
     nodearray node_arr = LoadRectangles();
     // displayNodeArray(node_arr);

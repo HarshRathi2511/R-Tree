@@ -2,3 +2,5 @@
 *.o
 .ccls-cache 
 *.exe
+myenv 
+mbr_terminal.png

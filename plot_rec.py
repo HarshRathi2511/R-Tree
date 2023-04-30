@@ -1,9 +1,11 @@
 import csv
-from matplotlib import pyplot as plt, patches
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-import matplotlib.colors as mcolors
 import random
+
+import matplotlib.colors as mcolors
+import matplotlib.patches as patches
+import matplotlib.pyplot as plt
+from matplotlib import patches
+from matplotlib import pyplot as plt
 
 # For csv
 # row[0] -> anchor_x (bottom left corner)
@@ -19,10 +21,11 @@ with open("./rect_data.csv", "r") as file:
     # ax.set(xlim=(0,30), ylim=(0,30))
     
     for row in csv_reader:
-        print(row)
+        # print(row)
 
-        ax.add_patch(patches.Rectangle((int(row[0]), int(row[1])), width=int(row[2]), height=int(row[3]), edgecolor='blue', facecolor='none', linewidth=2))
+        ax.add_patch(patches.Rectangle((int(row[0]), int(row[1])), width=int(row[2]), height=int(row[3]), edgecolor='blue', facecolor='none', linewidth=0.6))
     
     # for auto scaling
     plt.axis("scaled") # remove line in case of manually setting axis limits
     plt.show()
+    plt.savefig('mbr.png')
