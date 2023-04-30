@@ -22,8 +22,8 @@ with open("./rect_data.csv", "r") as file:
     
     for row in csv_reader:
         # print(row)
-
-        ax.add_patch(patches.Rectangle((int(row[0]), int(row[1])), width=int(row[2]), height=int(row[3]), edgecolor='blue', facecolor='none', linewidth=0.6))
+        # red color for the zero area rectangles
+         ax.add_patch(patches.Rectangle((int(row[0]), int(row[1])), width=int(row[2]), height=int(row[3]), edgecolor='blue', facecolor='none', linewidth=0.6))
     
     # for auto scaling
     plt.axis("scaled") # remove line in case of manually setting axis limits

@@ -274,11 +274,11 @@ void printRectangle(rectangle rect)
 void displaySingleNode(node* node){
     if(node->childpointer== NULL){
         //case of leaf nodes
-        // printf("Leaf :- ");
+        printf("Leaf :- ");
     }else{
-        // printf("Internal :- ");
+        printf("Internal :- ");
     }
-    printRectangle(node->mbr);
+    // printRectangle(node->mbr);
 }
 void displayNodeArray(nodearray node_arr)
 {
