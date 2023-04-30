@@ -10,6 +10,7 @@ python3 -m venv myenv
 source myenv/bin/activate
 # Install required packages
 pip install matplotlib
+pip install pandas
 python3 plot_rec.py
 # Deactivate the virtual environment
 deactivate

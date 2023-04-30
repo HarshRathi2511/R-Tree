@@ -1,31 +1,29 @@
-import csv
-import random
-
-import matplotlib.colors as mcolors
-import matplotlib.patches as patches
 import matplotlib.pyplot as plt
-from matplotlib import patches
-from matplotlib import pyplot as plt
+import pandas as pd
 
-# For csv
-# row[0] -> anchor_x (bottom left corner)
-# row[1] -> anchor_y (bottom left corner)
-# row[2] -> width
-# row[3] -> height
+# Read data from CSV into a DataFrame
+df = pd.read_csv("rect_data.csv", header=None, names=['anchor_x', 'anchor_y', 'width', 'height'])
 
-with open("./rect_data.csv", "r") as file:
-    csv_reader = csv.reader(file)
-    ax = plt.gca()
+# Separate rectangles and point rectangles into separate DataFrames
+rect_df = df.loc[(df['width'] != 0) | (df['height'] != 0)]
+point_df = df.loc[(df['width'] == 0) & (df['height'] == 0)]
 
-    # Limits for the axes
-    # ax.set(xlim=(0,30), ylim=(0,30))
-    
-    for row in csv_reader:
-        # print(row)
-        # red color for the zero area rectangles
-         ax.add_patch(patches.Rectangle((int(row[0]), int(row[1])), width=int(row[2]), height=int(row[3]), edgecolor='blue', facecolor='none', linewidth=0.6))
-    
-    # for auto scaling
-    plt.axis("scaled") # remove line in case of manually setting axis limits
-    plt.show()
-    plt.savefig('mbr.png')
+# Plot rectangles using matplotlib's Rectangle patches
+fig, ax = plt.subplots(dpi=1200)
+for _, row in rect_df.iterrows():
+    ax.add_patch(plt.Rectangle((row['anchor_x'], row['anchor_y']), row['width'], row['height'], edgecolor='black', facecolor='none', linewidth=0.4))
+
+# Plot point rectangles using matplotlib's scatter function
+ax.scatter(point_df['anchor_x'], point_df['anchor_y'], s=.05, color='red')
+
+# Set axis limits and aspect ratio
+min_x = df['anchor_x'].min()
+max_x = df['anchor_x'].max() + df['width'].max()
+min_y = df['anchor_y'].min()
+max_y = df['anchor_y'].max() + df['height'].max()
+ax.set_xlim([min_x, max_x])
+ax.set_ylim([min_y, max_y])
+ax.set_aspect('equal')
+plt.axis("scaled")
+plt.show()
+plt.savefig('mbr.png')
