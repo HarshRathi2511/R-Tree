@@ -19,7 +19,7 @@ void printRectangle(rectangle rect);
 void displaySingleNode(node* node);
 rectangle MinBoundRect(Rnode *rnode);
 
-#define M 50
+#define M 4
 
 struct nodearray
 {
@@ -146,10 +146,10 @@ rectangle MinBoundRect(Rnode *rnode)
 // STR CODE :-
 
 // correct
-nodearray LoadRectangles()
+nodearray LoadRectangles(char* filename)
 {
 
-    FILE *fp = fopen("data1000.txt", "r");
+    FILE *fp = fopen(filename, "r");
     char buff[30];
     int n = 0;
     while (fgets(buff, 30, fp) != NULL)
@@ -403,7 +403,7 @@ void main()
     printf("Starting B-Tree Execution\n");
     clearRectCSV();
     // inital loading from the file
-    nodearray node_arr = LoadRectangles();
+    nodearray node_arr = LoadRectangles("data.txt");
     // displayNodeArray(node_arr);
 
     Rnodearray *rnode_arr = createRNodesForLevel(node_arr, true);
