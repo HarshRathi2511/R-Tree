@@ -19,7 +19,7 @@ void printRectangle(rectangle rect);
 void displaySingleNode(node* node);
 rectangle MinBoundRect(Rnode *rnode);
 
-#define M 4
+#define M 50
 
 struct nodearray
 {
@@ -100,7 +100,6 @@ Rnode *makeRnode(bool isLeaf, bool isRoot)
 }
 node makenonLeafNode(Rnode *child)
 {   
-    //!!! CHILD IS COMING NULL FOR THE THIRD ITERATION 
     if(child==NULL){
         printf("child null\n");
     }
@@ -264,10 +263,10 @@ void STR(nodearray *node_arr, int b)
 // function to print points loaded from file
 void printRectangle(rectangle rect)
 {   
-    //when point rectangles 
-    if(rect.low_x== rect.high_x && rect.high_y==rect.low_y){
-          printf("(x,y):-(%.2f %.2f) \n", rect.low_x, rect.high_y);
-    }
+    // //when point rectangles 
+    // if(rect.low_x== rect.high_x && rect.high_y==rect.low_y){
+    //       printf("(x,y):-(%.2f %.2f) \n", rect.low_x, rect.high_y);
+    // }
     printf("(low_x,low_y):-(%.2f %.2f),(high_x,high_y) (%.2f %.2f) \n", rect.low_x, rect.high_x, rect.low_y, rect.high_y);
 }
 
@@ -278,7 +277,7 @@ void displaySingleNode(node* node){
     }else{
         printf("Internal :- ");
     }
-    // printRectangle(node->mbr);
+    printRectangle(node->mbr);
 }
 void displayNodeArray(nodearray node_arr)
 {
@@ -290,7 +289,6 @@ void displayNodeArray(nodearray node_arr)
 
 Rnodearray *createRNodesForLevel(nodearray a, bool Leaf)
 {   
-    //!!11 handle the case when the number of rectangles are less than M 
     // define the rnode_arr
     Rnodearray *rnode_arr = malloc(sizeof(Rnodearray));
     
@@ -304,10 +302,7 @@ Rnodearray *createRNodesForLevel(nodearray a, bool Leaf)
         // grouped node
         nodearray grouped_nodes;
         grouped_nodes.arr = malloc(M * sizeof(node));
-
         grouped_nodes.size = min(M, a.size - i);
-        
-        //!! CHECK THIS CODE FULLY (GIVES RNODE.ARR[I] ==null)
         for (int j = 0; j < M && (i + j) < a.size; j++) // check condition
         {
             grouped_nodes.arr[j] = a.arr[i + j];
@@ -316,9 +311,6 @@ Rnodearray *createRNodesForLevel(nodearray a, bool Leaf)
 
         Rnode *r1 = createRNodes(grouped_nodes, Leaf);
         rnode_arr->arr[x] = r1;
-
-        // debug vals
-        //  printRNodeAndElements(rnode_arr->arr[i]);
 
         // dont change
         x++;
@@ -348,8 +340,6 @@ Rnode *createTree(Rnodearray *rnode_arr)
             printf("rnode iteration null in %d\n",i);
         }
         created_parent_nodes.arr[i] = makenonLeafNode(rnode_arr->arr[i]);
-        // printf("%f ", created_parent_nodes.arr[i].mbr.low_x);
-        // printRectangle(created_parent_nodes.arr[i].mbr);
     }
 
     
@@ -397,27 +387,14 @@ void clearRectCSV() {
     fclose(fp); // close the file to delete its contents
 }
 
+
 void main()
 {   
     
     printf("Starting B-Tree Execution\n");
     clearRectCSV();
-    // inital loading from the file
-    nodearray node_arr = LoadRectangles("data.txt");
-    // displayNodeArray(node_arr);
-
+    nodearray node_arr = LoadRectangles("data1000.txt");
     Rnodearray *rnode_arr = createRNodesForLevel(node_arr, true);
-
-    // for(int i=0;i<rnode_arr->size;i++){
-    //     printRNodeAndElements(rnode_arr->arr[i]);
-    // }
-
-    // printf("%d",rnode_arr->size);
-
     Rnode *root = createTree(rnode_arr);
-    // if (root)
-    // {
-    //     printRNodeAndElements(root);
-    // }
     preorder(root);
 }
