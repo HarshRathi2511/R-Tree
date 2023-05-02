@@ -20,7 +20,7 @@ void displaySingleNode(node *node);
 rectangle MinBoundRect(Rnode *rnode);
 void printRecToCSV(rectangle mbr);
 
-#define M 4
+#define M 128
 
 struct nodearray // array of nodearray which stores the size as well
 {
@@ -408,7 +408,7 @@ void preorder(Rnode *root)
 void main()
 {
     //the file from which the dataset loaded is passed in this function 
-    nodearray node_arr = LoadRectangles("data.txt");
+    nodearray node_arr = LoadRectangles("large_dataset.txt");
     //creates the rnodes for the base level and passed into the createTree function 
     Rnodearray *rnode_arr = createRNodesForLevel(node_arr, true);
     //creates the tree from the ground level of RNodes and the subsequent levels and returns the root 

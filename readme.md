@@ -18,12 +18,12 @@ bash run_with_gcc.sh
 ```
  The above script file compiles the code using gcc and then stores the mbrs contained in `rect_data.csv` file.
 
-2. To view the plotting results, run the below script using the command:
+2. To view the plotting results, run the below script using the command:	
 
 ```bash
 bash plot_graph.sh
 ```
-Note: The `plot_graph.sh` script sets up a Python virtual environment, runs the Python code, and saves the plot in `mbr.png`.
+Note: The `plot_graph.sh` script runs the C code and then sets up a Python virtual environment, runs the Python code, and saves the plot in `mbr.png`.
 
 
 
