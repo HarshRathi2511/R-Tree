@@ -20,7 +20,7 @@ void displaySingleNode(node *node);
 rectangle MinBoundRect(Rnode *rnode);
 void printRecToCSV(rectangle mbr);
 
-#define M 2
+#define M 4
 
 struct nodearray // array of nodearray which stores the size as well
 {
@@ -28,6 +28,7 @@ struct nodearray // array of nodearray which stores the size as well
     int size;
 };
 
+// array of RNodes
 struct Rnodearray
 {
     Rnode **arr; // array of Rnode*
@@ -47,6 +48,8 @@ struct node
     rectangle mbr;       // rectangle contained in the node
     Rnode *childpointer; // pointer to the rnode i.e their children
 };
+
+// RNode is the basic unit of the RTree,and contains the array of child nodes
 struct Rnode
 {
     bool isLeaf;
@@ -69,6 +72,8 @@ float min(float a, float b)
         return b;
     return a;
 }
+
+// creates the RNode from the grouped nodes
 Rnode *createRNodes(nodearray node_arr, bool Leaf)
 {
     Rnode *rnode = makeRnode(Leaf, false);
@@ -125,6 +130,7 @@ void swap(point *x, point *y)
     *y = temp;
 }
 
+// computes the centre of the rectangle
 point computeCentre(rectangle rect)
 {
     point p;
@@ -148,7 +154,7 @@ void Merge(nodearray *node_arr, int l, int mid, int h, bool xflag)
         // sorted according to x coordinate
         if (xflag)
         {
-            if (centrei.x < centrej.x)
+            if (centrei.x <= centrej.x)
                 B[k++] = node_arr->arr[i++];
             else
                 B[k++] = node_arr->arr[j++];
@@ -156,7 +162,7 @@ void Merge(nodearray *node_arr, int l, int mid, int h, bool xflag)
         // sorted according to y coordinate
         else
         {
-            if (centrei.y < centrej.y)
+            if (centrei.y <= centrej.y)
                 B[k++] = node_arr->arr[i++];
             else
                 B[k++] = node_arr->arr[j++];
@@ -185,12 +191,7 @@ void MergeSort(nodearray *node_arr, int l, int h, bool xflag)
     }
 }
 
-// function to print points loaded from file
-void printRectangle(rectangle rect)
-{
-    printf("(low_x,low_y):-(%.2f %.2f),(high_x,high_y) (%.2f %.2f) \n", rect.low_x, rect.low_y, rect.high_x, rect.high_y);
-}
-
+// displays the node and its mbr:- used in preorder traversal
 void displaySingleNode(node *node)
 {
     if (node->childpointer == NULL)
@@ -202,7 +203,7 @@ void displaySingleNode(node *node)
     else
     {
         printf("Internal:- ");
-        printRectangle(node->mbr);
+        printf("(low_x,low_y):-(%.2f %.2f),(high_x,high_y) (%.2f %.2f) \n", node->mbr.low_x, node->mbr.low_y, node->mbr.high_x, node->mbr.high_y);
     }
 }
 // utility function for printing the preorder traversal to a file to aid in python matlib graphs
@@ -217,6 +218,7 @@ void printRecToCSV(rectangle mbr)
     fprintf(fp, "%d,%d,%d,%d\n", (int)mbr.low_x, (int)mbr.low_y, (int)mbr.high_x - (int)mbr.low_x, (int)mbr.high_y - (int)mbr.low_y);
     fclose(fp);
 }
+//clears the contents of the file rect_data.csv 
 void clearRectCSV()
 {
     FILE *fp = fopen("rect_data.csv", "w"); // open the file in "write" mode to clear the contents of the file
@@ -226,12 +228,27 @@ void clearRectCSV()
 }
 // HELPER FUNCTIONS END .............................
 
+/*
+  The STR function takes an unordered array of nodes and packs them into a spatial index structure using the
+   Sort-Tile-Recursive (STR) algorithm.
+  The algorithm works by first sorting the rectangles by their x-coordinate and
+   then partitioning them into s vertical slices. Each slice is then sorted by y-coordinate
+   and packed into nodes.
+ node_arr: An unordered array of nodes
+ b: The maximum number of nodes in an Rnode
+ */
 void STR(nodearray *node_arr, int b)
 {
-    MergeSort(node_arr, 0, node_arr->size - 1, true); // should return an node array
+    // Sort the nodes in ascending order according to their x coordinates
+    MergeSort(node_arr, 0, node_arr->size - 1, true);
 
+    // Calculate the number of leaf pages in the spatial index structure
     int p = ceil((float)node_arr->size / (float)b);
+
+    // Calculate the number of vertical slices
     int s = ceil(sqrt(p));
+
+    // Sort each slice in ascending order according to their y coordinates
     for (int i = 0; i < node_arr->size; i = i + s * b)
     {
         MergeSort(node_arr, i, min(node_arr->size - 1, i + s * b - 1), false);
@@ -258,7 +275,7 @@ rectangle MinBoundRect(Rnode *rnode)
     return minbound;
 }
 
-// STR CODE :-
+//load the rectangles from the file data.txt 
 nodearray LoadRectangles(char *filename)
 {
     clearRectCSV(); // clears the file contents of rect_data.csv
@@ -298,6 +315,7 @@ nodearray LoadRectangles(char *filename)
     return nodearr;
 }
 
+//Takes in the nodearray -> applies STR on it -> groups it into RNodes ->returns the RNodes 
 Rnodearray *createRNodesForLevel(nodearray a, bool Leaf)
 {
     // define and allocate:- rnode_arr
@@ -309,7 +327,7 @@ Rnodearray *createRNodesForLevel(nodearray a, bool Leaf)
     int x = 0; // counts the iterations for rnode_arr
     for (int i = 0; i < a.size; i += M)
     {
-        // grouped node
+        // grouped node 
         nodearray grouped_nodes;
         grouped_nodes.arr = malloc(M * sizeof(node));
         grouped_nodes.size = min(M, a.size - i);
@@ -328,6 +346,7 @@ Rnodearray *createRNodesForLevel(nodearray a, bool Leaf)
     return rnode_arr;
 }
 
+//The main code to create the RTree ,and returns the root RNode of the tree on completions 
 Rnode *createTree(Rnodearray *rnode_arr)
 {
     // Base Case:- when the rnodes in the input array are one :- i.e ROOT rnode
@@ -335,9 +354,6 @@ Rnode *createTree(Rnodearray *rnode_arr)
     {
         return rnode_arr->arr[0];
     }
-
-    printf("rnode input size:- %d\n", rnode_arr->size);
-
     // Create the nodearray of the parent nodes
     nodearray created_parent_nodes;
     created_parent_nodes.arr = malloc(rnode_arr->size * sizeof(node));
@@ -356,7 +372,6 @@ Rnode *createTree(Rnodearray *rnode_arr)
 
     // convert the array of parent nodes and group them into rnodes
     Rnodearray *created_parent_rnodes = createRNodesForLevel(created_parent_nodes, false);
-    printf("rnode op size:- %d\n\n\n", created_parent_rnodes->size);
 
     // free to avoid memory leaks
     free(rnode_arr->arr);
@@ -378,16 +393,21 @@ void preorder(Rnode *root)
     {
         // use a custom print function for the rectangle along with whether leaf or non leaf node
         displaySingleNode(&root->childlist[i]);
+        //prints the mbrs to the rect_data.csv file to aid in matplotlib graph plotting 
         printRecToCSV(root->childlist[i].mbr);
+        //recursive call to the childlist of the current RNodes contained Nodes 
         preorder(root->childlist[i].childpointer);
     }
 }
 
 void main()
 {
-    printf("Starting B-Tree Execution\n");
-    nodearray node_arr = LoadRectangles("small_dataset.txt");
+    //the file from which the dataset loaded is passed in this function 
+    nodearray node_arr = LoadRectangles("large_dataset.txt");
+    //creates the rnodes for the base level and passed into the createTree function 
     Rnodearray *rnode_arr = createRNodesForLevel(node_arr, true);
+    //creates the tree from the ground level of RNodes and the subsequent levels and returns the root 
     Rnode *root = createTree(rnode_arr);
+    //Preorder traversal of the created R Tree 
     preorder(root);
 }

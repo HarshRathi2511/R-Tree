@@ -1,10 +1,3 @@
-rm *.o
-rm r_tree_exe
-
-gcc -c main.c
-gcc -o r_tree_exe main.o -lm 
-./r_tree_exe
-
 # run python code here after virtual env for graph 
 python3 -m venv myenv
 source myenv/bin/activate
@@ -14,13 +7,6 @@ pip install pandas
 python3 plot_rec.py
 # Deactivate the virtual environment
 deactivate
-
-# Check if catimg is installed for ubuntu 
-if ! command -v catimg &> /dev/null; then
-    echo "catimg not found. Installing..."
-    sudo apt-get update
-    sudo apt-get install catimg
-fi
 
 # Display the image 
 image_path="mbr.png"
