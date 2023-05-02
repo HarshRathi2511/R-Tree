@@ -11,7 +11,7 @@ point_df = df.loc[(df['width'] == 0) & (df['height'] == 0)]
 # Plot rectangles using matplotlib's Rectangle patches
 fig, ax = plt.subplots(dpi=1200)
 for _, row in rect_df.iterrows():
-    ax.add_patch(plt.Rectangle((row['anchor_x'], row['anchor_y']), row['width'], row['height'], edgecolor='black', facecolor='none', linewidth=0.4))
+    ax.add_patch(plt.Rectangle((row['anchor_x'], row['anchor_y']), row['width'], row['height'], edgecolor='black', facecolor='none', linewidth=0.3))
 
 # Plot point rectangles using matplotlib's scatter function
 if len(point_df)<1000:

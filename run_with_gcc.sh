@@ -1,5 +1,4 @@
 rm *.o
-rm *.exe
 rm r_tree_exe
 
 gcc -c main.c

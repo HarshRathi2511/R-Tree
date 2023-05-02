@@ -16,13 +16,13 @@ Rnode *createRNodes(nodearray narr, bool Leaf);
 Rnode *makeRnode(bool isLeaf, bool isRoot);
 void displayNodeArray(nodearray node_arr);
 void printRectangle(rectangle rect);
-void displaySingleNode(node* node);
+void displaySingleNode(node *node);
 rectangle MinBoundRect(Rnode *rnode);
 void printRecToCSV(rectangle mbr);
 
-#define M 10
+#define M 2
 
-struct nodearray //array of nodearray which stores the size as well 
+struct nodearray // array of nodearray which stores the size as well
 {
     node *arr;
     int size;
@@ -34,7 +34,7 @@ struct Rnodearray
     int size;
 };
 
-//The below struct stores the node's contained rectangle and the bottom left and bottom right coordinates 
+// The below struct stores the node's contained rectangle and the bottom left and bottom right coordinates
 struct rectangle
 {
     float low_x;
@@ -44,17 +44,17 @@ struct rectangle
 };
 struct node
 {
-    rectangle mbr; //rectangle contained in the node 
-    Rnode *childpointer; //pointer to the rnode i.e their children 
+    rectangle mbr;       // rectangle contained in the node
+    Rnode *childpointer; // pointer to the rnode i.e their children
 };
 struct Rnode
 {
     bool isLeaf;
     bool isRoot;
-    int numChild; // number of elements in each rnode
-    node childlist[M]; //array of nodes contained in each rnode 
+    int numChild;      // number of elements in each rnode
+    node childlist[M]; // array of nodes contained in each rnode
 };
-//Point:- used to take in the (x,y) coordinate from the dataset 
+// Point:- used to take in the (x,y) coordinate from the dataset
 struct point
 {
     float x;
@@ -102,11 +102,13 @@ Rnode *makeRnode(bool isLeaf, bool isRoot)
     return rnode;
 }
 node makenonLeafNode(Rnode *child)
-{   
-    if(child==NULL){
+{
+    if (child == NULL)
+    {
         printf("child null\n");
     }
-    if(child->childlist==NULL){
+    if (child->childlist == NULL)
+    {
         printf("childlist null\n");
     }
 
@@ -183,23 +185,26 @@ void MergeSort(nodearray *node_arr, int l, int h, bool xflag)
     }
 }
 
-
 // function to print points loaded from file
 void printRectangle(rectangle rect)
-{   
-    printf("(low_x,low_y):-(%.2f %.2f),(high_x,high_y) (%.2f %.2f) \n", rect.low_x, rect.high_x, rect.low_y, rect.high_y);
+{
+    printf("(low_x,low_y):-(%.2f %.2f),(high_x,high_y) (%.2f %.2f) \n", rect.low_x, rect.low_y, rect.high_x, rect.high_y);
 }
 
-void displaySingleNode(node* node){
-    if(node->childpointer== NULL){
-        //case of leaf nodes
-        printf("Leaf :- ");
-    }else{
-        printf("Internal :- ");
+void displaySingleNode(node *node)
+{
+    if (node->childpointer == NULL)
+    {
+        // case of leaf nodes
+        printf("Leaf  \t:- ");
+    }
+    else
+    {
+        printf("Internal:- ");
     }
     printRectangle(node->mbr);
 }
-//utility function for printing the preorder traversal to a file to aid in python matlib graphs 
+// utility function for printing the preorder traversal to a file to aid in python matlib graphs
 void printRecToCSV(rectangle mbr)
 {
     FILE *fp = fopen("rect_data.csv", "a");
@@ -207,17 +212,18 @@ void printRecToCSV(rectangle mbr)
     {
         printf("File pointer not found\n");
     }
-    //write abs()
+    // write abs()
     fprintf(fp, "%d,%d,%d,%d\n", (int)mbr.low_x, (int)mbr.low_y, (int)mbr.high_x - (int)mbr.low_x, (int)mbr.high_y - (int)mbr.low_y);
     fclose(fp);
 }
-void clearRectCSV() {
-    FILE* fp = fopen("rect_data.csv", "w"); // open the file in "write" mode to clear the contents of the file
-    if(fp==NULL)
+void clearRectCSV()
+{
+    FILE *fp = fopen("rect_data.csv", "w"); // open the file in "write" mode to clear the contents of the file
+    if (fp == NULL)
         return;
     fclose(fp); // close the file to delete its contents
 }
-//HELPER FUNCTIONS END .............................
+// HELPER FUNCTIONS END .............................
 
 void STR(nodearray *node_arr, int b)
 {
@@ -231,10 +237,9 @@ void STR(nodearray *node_arr, int b)
     }
 }
 
-
-// MBR :- Computes the MBR for the given rectangle 
+// MBR :- Computes the MBR for the given rectangle
 rectangle MinBoundRect(Rnode *rnode)
-{   
+{
     rectangle r = rnode->childlist[0].mbr;
     rectangle minbound = r;
     for (int i = 1; i < rnode->numChild; i++)
@@ -253,12 +258,13 @@ rectangle MinBoundRect(Rnode *rnode)
 }
 
 // STR CODE :-
-nodearray LoadRectangles(char* filename)
-{   
-    clearRectCSV(); //clears the file contents of rect_data.csv 
+nodearray LoadRectangles(char *filename)
+{
+    clearRectCSV(); // clears the file contents of rect_data.csv
 
     FILE *fp = fopen(filename, "r");
-    if(fp==NULL){
+    if (fp == NULL)
+    {
         printf("File pointer not found\n");
     }
     char buff[30];
@@ -292,38 +298,38 @@ nodearray LoadRectangles(char* filename)
 }
 
 Rnodearray *createRNodesForLevel(nodearray a, bool Leaf)
-{   
+{
     // define and allocate:- rnode_arr
-    Rnodearray *rnode_arr = malloc(sizeof(Rnodearray)); 
+    Rnodearray *rnode_arr = malloc(sizeof(Rnodearray));
     rnode_arr->size = ceil((float)a.size / (float)M);
     rnode_arr->arr = malloc(sizeof(Rnode *) * rnode_arr->size);
 
     STR(&a, M);
-    int x = 0; //counts the iterations for rnode_arr
+    int x = 0; // counts the iterations for rnode_arr
     for (int i = 0; i < a.size; i += M)
     {
         // grouped node
         nodearray grouped_nodes;
         grouped_nodes.arr = malloc(M * sizeof(node));
         grouped_nodes.size = min(M, a.size - i);
-        for (int j = 0; j < M && (i + j) < a.size; j++) 
+        for (int j = 0; j < M && (i + j) < a.size; j++)
         {
             grouped_nodes.arr[j] = a.arr[i + j];
         }
-        
-        //create r-nodes for the grouepd nodes 
+
+        // create r-nodes for the grouepd nodes
         Rnode *r1 = createRNodes(grouped_nodes, Leaf);
         rnode_arr->arr[x] = r1;
 
-        //dont change
+        // dont change
         x++;
     }
     return rnode_arr;
 }
 
 Rnode *createTree(Rnodearray *rnode_arr)
-{   
-    //Base Case:- when the rnodes in the input array are one :- i.e ROOT rnode 
+{
+    // Base Case:- when the rnodes in the input array are one :- i.e ROOT rnode
     if (rnode_arr->size == 1)
     {
         return rnode_arr->arr[0];
@@ -331,35 +337,36 @@ Rnode *createTree(Rnodearray *rnode_arr)
 
     printf("rnode input size:- %d\n", rnode_arr->size);
 
-    //Create the nodearray of the parent nodes 
+    // Create the nodearray of the parent nodes
     nodearray created_parent_nodes;
     created_parent_nodes.arr = malloc(rnode_arr->size * sizeof(node));
     created_parent_nodes.size = rnode_arr->size;
 
     for (int i = 0; i < rnode_arr->size; i++)
     {
-        //null/debug checks 
-        if(rnode_arr->arr[i]==NULL){
-            printf("rnode iteration null in %d\n",i);
+        // null/debug checks
+        if (rnode_arr->arr[i] == NULL)
+        {
+            printf("rnode iteration null in %d\n", i);
         }
-         // makes parent node from rnode
+        // makes parent node from rnode
         created_parent_nodes.arr[i] = makenonLeafNode(rnode_arr->arr[i]);
     }
 
-    //convert the array of parent nodes and group them into rnodes
+    // convert the array of parent nodes and group them into rnodes
     Rnodearray *created_parent_rnodes = createRNodesForLevel(created_parent_nodes, false);
     printf("rnode op size:- %d\n\n\n", created_parent_rnodes->size);
-    
-    //free to avoid memory leaks 
+
+    // free to avoid memory leaks
     free(rnode_arr->arr);
     free(rnode_arr);
     free(created_parent_nodes.arr);
-    
-    //recursive call to create the nodes for the next level 
+
+    // recursive call to create the nodes for the next level
     createTree(created_parent_rnodes);
 }
 
-//Preorder Traversal of the RTree 
+// Preorder Traversal of the RTree
 void preorder(Rnode *root)
 {
     if (root == NULL)
@@ -376,9 +383,9 @@ void preorder(Rnode *root)
 }
 
 void main()
-{   
+{
     printf("Starting B-Tree Execution\n");
-    nodearray node_arr = LoadRectangles("data1000.txt");
+    nodearray node_arr = LoadRectangles("small_dataset.txt");
     Rnodearray *rnode_arr = createRNodesForLevel(node_arr, true);
     Rnode *root = createTree(rnode_arr);
     preorder(root);
