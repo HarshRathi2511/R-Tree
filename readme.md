@@ -9,6 +9,7 @@ The code reads data from `data.txt` file, which is passed as a parameter in the 
 
 To execute the code, run the script/instructions for getting the C code output using the command:
 
+```bash
 bash run_with_gcc.sh
 
 The above script file compiles the code using gcc and then stores the mbrs contained in `rect_data.csv` file.
