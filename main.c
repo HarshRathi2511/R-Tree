@@ -197,12 +197,13 @@ void displaySingleNode(node *node)
     {
         // case of leaf nodes
         printf("Leaf  \t:- ");
+        printf("(x,y):-(%.2f %.2f) \n", node->mbr.low_x, node->mbr.low_y);
     }
     else
     {
         printf("Internal:- ");
+        printRectangle(node->mbr);
     }
-    printRectangle(node->mbr);
 }
 // utility function for printing the preorder traversal to a file to aid in python matlib graphs
 void printRecToCSV(rectangle mbr)
