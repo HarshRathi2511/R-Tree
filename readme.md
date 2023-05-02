@@ -7,6 +7,8 @@ This directory contains 2 script files which runs independently of each other:
 The code is contained in a single file `DSA_assignment_group_43.c`.
 
 The code reads data from `data.txt` file, which is passed as a parameter in the main function.
+By default `b or M =4` for the dataset of 21 points 
+For larger datasets you can set the value of `M` (we tested with M=128) by changing the declaration of M in line 23
 
 ### To execute the code, follow these steps:
 1. Run the below script/instructions for getting the C code output using the command:
