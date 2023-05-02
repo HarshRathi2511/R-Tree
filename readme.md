@@ -1,4 +1,10 @@
+This directory contains 2 script files which runs independantly of each other :- 
+1)run_with_gcc.sh (runs the c code and gives o/p in terminal)
+2)plot_graph.sh (plots graphs in python)
+
 The code is contained in a single file DSA_assignment_group_43.c
+
+The code reads data from "data.txt" file, passed as a parameter in the main function 
 
 To execute the code run the script/instructions for getting the C code output using the command 
 "bash run_with_gcc.sh"
