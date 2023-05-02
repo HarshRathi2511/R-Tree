@@ -1,19 +1,23 @@
-This directory contains 2 script files which runs independantly of each other :- 
-1)run_with_gcc.sh (runs the c code and gives o/p in terminal)
-2)plot_graph.sh (plots graphs in python)
+This directory contains 2 script files which runs independently of each other:
 
-The code is contained in a single file DSA_assignment_group_43.c
+1. `run_with_gcc.sh` (runs the C code and gives the output in the terminal)
+2. `plot_graph.sh` (plots graphs in Python)
 
-The code reads data from "data.txt" file, passed as a parameter in the main function 
+The code is contained in a single file `DSA_assignment_group_43.c`.
 
-To execute the code run the script/instructions for getting the C code output using the command 
-"bash run_with_gcc.sh"
+The code reads data from `data.txt` file, which is passed as a parameter in the main function.
 
-The above script file compiles the code using gcc and then stores the mbrs contained in rect_data.csv file 
+To execute the code, run the script/instructions for getting the C code output using the command:
 
-To view the plotting results run the below script using the command 
-"bash plot_graph.sh" 
+bash run_with_gcc.sh
 
-This file sets up python virtual environment and runs the python code and saves the plot in "mbr.png" 
+The above script file compiles the code using gcc and then stores the mbrs contained in `rect_data.csv` file.
+
+To view the plotting results, run the below script using the command:
+
+# bash plot_graph.sh
+
+Note: The `plot_graph.sh` script sets up a Python virtual environment, runs the Python code, and saves the plot in `mbr.png`.
+
 
 
