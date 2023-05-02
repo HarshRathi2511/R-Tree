@@ -297,9 +297,9 @@ nodearray LoadRectangles(char *filename)
     node *arr = malloc(n * sizeof(node));
     nodearr.arr = arr;
     nodearr.size = n;
-    //
     int i = 0;
     rewind(fp);
+    //load the data from the file into the buffer variable and then into nodearray 
     while (fgets(buff, 30, fp) != NULL)
     {
         float x = 0, y = 0;
@@ -330,7 +330,10 @@ Rnodearray *createRNodesForLevel(nodearray a, bool Leaf)
         // grouped node 
         nodearray grouped_nodes;
         grouped_nodes.arr = malloc(M * sizeof(node));
+        // The size of this array is set to the minimum value between M and the remaining number
+        // of nodes in the input node array.
         grouped_nodes.size = min(M, a.size - i);
+        //A nested for loop is used to copy a group of nodes from the input node array to the new node array.
         for (int j = 0; j < M && (i + j) < a.size; j++)
         {
             grouped_nodes.arr[j] = a.arr[i + j];
@@ -343,6 +346,7 @@ Rnodearray *createRNodesForLevel(nodearray a, bool Leaf)
         // dont change
         x++;
     }
+    //After all iterations are completed, return to the created rnode_arr.
     return rnode_arr;
 }
 
@@ -378,13 +382,14 @@ Rnode *createTree(Rnodearray *rnode_arr)
     free(rnode_arr);
     free(created_parent_nodes.arr);
 
-    // recursive call to create the nodes for the next level
+    // recursive call to create the nodes for the next level until the base case reached i.e only the root remains 
     createTree(created_parent_rnodes);
 }
 
 // Preorder Traversal of the RTree
 void preorder(Rnode *root)
-{
+{   
+    //Base Case
     if (root == NULL)
     {
         return;
@@ -403,7 +408,7 @@ void preorder(Rnode *root)
 void main()
 {
     //the file from which the dataset loaded is passed in this function 
-    nodearray node_arr = LoadRectangles("large_dataset.txt");
+    nodearray node_arr = LoadRectangles("data.txt");
     //creates the rnodes for the base level and passed into the createTree function 
     Rnodearray *rnode_arr = createRNodesForLevel(node_arr, true);
     //creates the tree from the ground level of RNodes and the subsequent levels and returns the root 
