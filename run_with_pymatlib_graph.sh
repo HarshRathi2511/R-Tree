@@ -15,13 +15,6 @@ python3 plot_rec.py
 # Deactivate the virtual environment
 deactivate
 
-
-#view the image 
-
-# for mac (img cat to display the created image in the terminal)
-# brew install --cask iterm2
-# brew install imgcat
-
 # Check if catimg is installed for ubuntu 
 if ! command -v catimg &> /dev/null; then
     echo "catimg not found. Installing..."
