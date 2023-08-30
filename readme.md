@@ -4,7 +4,7 @@ This directory contains 2 script files which runs independently of each other:
 1. `run_with_gcc.sh` (runs the C code and gives the output in the terminal)
 2. `plot_graph.sh` (plots graphs in Python)
 
-The code is contained in a single file `DSA_assignment_group_43.c`.
+The code is contained in a single file `main.c`.
 
 The code reads data from `data.txt` file, which is passed as a parameter in the main function.
 By default `b or M =4` for the dataset of 21 points 
