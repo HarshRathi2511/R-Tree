@@ -25,7 +25,7 @@ bash plot_graph.sh
 ```
 Note: The `plot_graph.sh` script runs the C code and then sets up a Python virtual environment, runs the Python code, and saves the plot in `mbr.png`.
 
-# Plot of the graph (using python script)
+### Plot of the graph (using python script)
 
 ![mbr](https://github.com/HarshRathi2511/R-Tree/assets/75066364/794d7940-4cfc-45ad-b65a-d712425a7db5)
 
